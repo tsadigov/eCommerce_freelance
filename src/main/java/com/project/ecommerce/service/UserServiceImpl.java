@@ -40,56 +40,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final SellerDetailsRepo sellerDetailsRepo;
     private final StoreRepo storeRepo;
 
-    @Override
-    @Transactional
-    public void signUp(SignUpDTO signUpDTO) {
-
-        if (findByUsername(signUpDTO.getUsername()) != null)
-            throw new AlreadyExistException(ALREADY_EXISTS);
-
-        // add store
-        String storeName = signUpDTO.getStoreName();
-        Store store;
-        if (storeRepo.findByName(storeName) != null) {
-            throw new AlreadyExistException("Store with the name "+ storeName + " already exists");
-        }
-        else {
-            store = new Store();
-            store.setName(storeName);
-            storeRepo.save(store);
-        }
-
-
-        // add user
-        AppUser user = new AppUser();
-        user.setUsername(signUpDTO.getUsername());
-        user.setEmail(signUpDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-        userRepo.save(user);
-
-        Role role;
-        // get role
-        if (!signUpDTO.isCustomer())
-            role = roleRepo.findRoleByRoleName(ROLE_SELLER);
-        else
-            role = roleRepo.findRoleByRoleName(ROLE_CUSTOMER);
-
-        addRoleToUser(user.getUsername(), role.getRoleName());
-
-        // save employee
-        CustomerDetails userDetails = new CustomerDetails();
-//        userDetails.setFirstName(signUpDTO.getFirstName());
-//        userDetails.setLastName(signUpDTO.getLastName());
-//        userDetails.setPhoneNumber(signUpDTO.getPhoneNumber());
-//        userDetails.setPostalCode(signUpDTO.getPostalCode());
-//        userDetails.setAddress(signUpDTO.getAddress());
-//        userDetails.setCountry(signUpDTO.getCountry());
-//        userDetails.setCity(signUpDTO.getCity());
-//        userDetails.setUserFk(user);
-//        userDetails.setStore(store);
-        customerDetailsRepo.save(userDetails);
-    }
-
     @Transactional
     @Override
     public ResponseDTO customerSignUp(CustomerSignUpDTO customerSignUpDTO) {

@@ -18,7 +18,7 @@ public class Store {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String name;
+    private String storeName;
 
     private String storeUrl;
 
