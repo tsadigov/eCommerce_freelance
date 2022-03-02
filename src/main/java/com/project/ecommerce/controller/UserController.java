@@ -1,6 +1,8 @@
 package com.project.ecommerce.controller;
 
+import com.project.ecommerce.dto.CustomerSignUpDTO;
 import com.project.ecommerce.dto.ResponseDTO;
+import com.project.ecommerce.dto.SellerSignUpDTO;
 import com.project.ecommerce.dto.SignUpDTO;
 import com.project.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,17 +24,23 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(path = "/register")
-    ResponseEntity<ResponseDTO> signUp(@RequestBody SignUpDTO signUpDTO) {
+    @PostMapping(path = "/register/customer")
+    ResponseEntity<ResponseDTO> signUp(@RequestBody CustomerSignUpDTO customerSignUpDTO) {
 
-        log.info("Request body -> {}", signUpDTO);
+        log.info("Request body -> {}", customerSignUpDTO);
 
-        userService.signUp(signUpDTO);
+        ResponseDTO responseDTO = userService.customerSignUp(customerSignUpDTO);
 
-        ResponseDTO responseDTO = ResponseDTO.builder()
-                .code(CREATED_CODE)
-                .message(CREATED)
-                .build();
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
+    @PostMapping(path = "/register/seller")
+    ResponseEntity<ResponseDTO> signUp(@RequestBody SellerSignUpDTO sellerSignUpDTO) {
+
+        log.info("Request body -> {}", sellerSignUpDTO);
+
+        ResponseDTO responseDTO = userService.sellerSignUp(sellerSignUpDTO);
 
         return ResponseEntity.ok()
                 .body(responseDTO);

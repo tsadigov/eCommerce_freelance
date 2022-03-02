@@ -22,7 +22,7 @@ public class Store {
 
     private String storeUrl;
 
-    private String logoUrl;
+    private String storeLogoUrl;
 
     @OneToMany(mappedBy = "store")
     private Set<Product> products;

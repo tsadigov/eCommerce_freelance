@@ -1,13 +1,14 @@
 package com.project.ecommerce.service;
 
 import com.project.ecommerce.dao.*;
-import com.project.ecommerce.domain.AppUser;
-import com.project.ecommerce.domain.CustomerDetails;
-import com.project.ecommerce.domain.Role;
-import com.project.ecommerce.domain.Store;
+import com.project.ecommerce.domain.*;
+import com.project.ecommerce.dto.CustomerSignUpDTO;
+import com.project.ecommerce.dto.ResponseDTO;
+import com.project.ecommerce.dto.SellerSignUpDTO;
 import com.project.ecommerce.dto.SignUpDTO;
 import com.project.ecommerce.exception.AlreadyExistException;
 import com.project.ecommerce.exception.ResourceNotFoundException;
+import com.project.ecommerce.utils.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,6 +23,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
@@ -34,7 +36,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final AppUserRepo userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
-    private final CustomerDetailsRepo employeeRepo;
+    private final CustomerDetailsRepo customerDetailsRepo;
+    private final SellerDetailsRepo sellerDetailsRepo;
     private final StoreRepo storeRepo;
 
     @Override
@@ -57,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
 
 
-        // add admin user
+        // add user
         AppUser user = new AppUser();
         user.setUsername(signUpDTO.getUsername());
         user.setEmail(signUpDTO.getEmail());
@@ -84,7 +87,76 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //        userDetails.setCity(signUpDTO.getCity());
 //        userDetails.setUserFk(user);
 //        userDetails.setStore(store);
-        employeeRepo.save(userDetails);
+        customerDetailsRepo.save(userDetails);
+    }
+
+    @Transactional
+    @Override
+    public ResponseDTO customerSignUp(CustomerSignUpDTO customerSignUpDTO) {
+        if (findByUsername(customerSignUpDTO.getUsername()) != null || findByEmail(customerSignUpDTO.getEmail()) != null)
+            throw new AlreadyExistException(ALREADY_EXISTS);
+
+        ResponseDTO responseDTO = null;
+        Role role = roleRepo.findRoleByRoleName(ROLE_CUSTOMER);
+        try {
+            AppUser user = Mapper.map(customerSignUpDTO, AppUser.class);
+            user.setPassword(passwordEncoder.encode(customerSignUpDTO.getPassword()));
+            userRepo.save(user);
+
+            addRoleToUser(user.getUsername(), role.getRoleName());
+
+            responseDTO = ResponseDTO.builder()
+                    .code(CREATED_CODE)
+                    .message(CREATED)
+                    .build();
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(BAD_CREDENTIALS)
+                    .build();
+            log.info(ex.getMessage());
+        }
+        return responseDTO;
+    }
+
+    @Transactional
+    @Override
+    public ResponseDTO sellerSignUp(SellerSignUpDTO sellerSignUpDTO) {
+        if(findByUsername(sellerSignUpDTO.getUsername()) != null || findByEmail(sellerSignUpDTO.getEmail()) != null)
+            throw new AlreadyExistException(ALREADY_EXISTS);
+
+        log.info(String.valueOf(sellerSignUpDTO));
+
+        ResponseDTO responseDTO = null;
+        Role role = roleRepo.findRoleByRoleName(ROLE_SELLER);
+
+        try {
+            AppUser user = Mapper.map(sellerSignUpDTO, AppUser.class);
+            user.setPassword(passwordEncoder.encode(sellerSignUpDTO.getPassword()));
+            userRepo.save(user);
+
+            addRoleToUser(user.getUsername(), role.getRoleName());
+
+            Store store = Mapper.map(sellerSignUpDTO, Store.class);
+            storeRepo.save(store);
+
+            SellerDetails sellerDetails = Mapper.map(sellerSignUpDTO, SellerDetails.class);
+            sellerDetails.setUser(user);
+            sellerDetails.setStore(store);
+            sellerDetailsRepo.save(sellerDetails);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(CREATED_CODE)
+                    .message(CREATED)
+                    .build();
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(BAD_CREDENTIALS)
+                    .build();
+            log.info(ex.getMessage());
+        }
+        return responseDTO;
     }
 
     @Override
@@ -125,6 +197,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public AppUser findByUsername(String username) {
         return userRepo.findByUsername(username);
+    }
+
+    @Override
+    public AppUser findByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
 }

@@ -17,12 +17,25 @@ public class CustomerDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user", referencedColumnName = "id")
-    private AppUser user;
+    private String fullName;
 
-    @OneToMany(mappedBy = "customerDetails")
-    private Set<ShippingDetails> shippingDetails;
+    private String addressLine1;
+
+    private String addressLine2;
+
+    private String country;
+
+    private String city;
+
+    private String state;
+
+    private String postalCode;
+
+    private String phoneNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
 
 
 }

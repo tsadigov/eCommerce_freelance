@@ -1,6 +1,7 @@
 package com.project.ecommerce.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AppUser {
 
     @Id
@@ -24,19 +26,19 @@ public class AppUser {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phoneNumber;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String lastName;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String country;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String city;
 
     @Column(nullable = false)
@@ -55,6 +57,9 @@ public class AppUser {
 
     @OneToMany(mappedBy = "user")
     private Set<BasketProduct> basketProducts;
+
+    @OneToMany(mappedBy = "user")
+    private Set<CustomerDetails> customerDetails;
 
     @OneToOne(mappedBy = "user")
     private SellerDetails sellerDetails;

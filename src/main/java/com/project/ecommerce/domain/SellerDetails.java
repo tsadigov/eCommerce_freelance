@@ -16,20 +16,20 @@ public class SellerDetails {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String postalCode;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String address;
 
-    @Column(unique = true, nullable = false)
-    private String balance;
+    @Column(nullable = false)
+    private Float balance;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "user", referencedColumnName = "id")
     private AppUser user;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "store", referencedColumnName = "id")
     private Store store;
 
