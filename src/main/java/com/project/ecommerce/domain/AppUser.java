@@ -46,7 +46,7 @@ public class AppUser {
 
     private String profilePictureUrl;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Collection<Role>roles;
 
     @OneToMany(mappedBy = "user")

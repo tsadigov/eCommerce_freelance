@@ -2,15 +2,17 @@ package com.project.ecommerce.service;
 
 import com.project.ecommerce.dao.*;
 import com.project.ecommerce.domain.*;
+import com.project.ecommerce.dto.CustomerDTO;
 import com.project.ecommerce.dto.CustomerSignUpDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.dto.SellerSignUpDTO;
-import com.project.ecommerce.dto.SignUpDTO;
 import com.project.ecommerce.exception.AlreadyExistException;
 import com.project.ecommerce.exception.ResourceNotFoundException;
 import com.project.ecommerce.utils.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,13 +25,12 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
 @Service
+//@Transactional
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
@@ -59,7 +60,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .code(CREATED_CODE)
                     .message(CREATED)
                     .build();
-        }catch (Exception ex){
+        } catch (Exception ex) {
             responseDTO = ResponseDTO.builder()
                     .code(INTERNAL_SERVER_ERROR_CODE)
                     .message(BAD_CREDENTIALS)
@@ -72,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Transactional
     @Override
     public ResponseDTO sellerSignUp(SellerSignUpDTO sellerSignUpDTO) {
-        if(findByUsername(sellerSignUpDTO.getUsername()) != null || findByEmail(sellerSignUpDTO.getEmail()) != null)
+        if (findByUsername(sellerSignUpDTO.getUsername()) != null || findByEmail(sellerSignUpDTO.getEmail()) != null)
             throw new AlreadyExistException(ALREADY_EXISTS);
 
         log.info(String.valueOf(sellerSignUpDTO));
@@ -81,15 +82,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Role role = roleRepo.findRoleByRoleName(ROLE_SELLER);
 
         try {
+            // Save user
             AppUser user = Mapper.map(sellerSignUpDTO, AppUser.class);
             user.setPassword(passwordEncoder.encode(sellerSignUpDTO.getPassword()));
             userRepo.save(user);
 
+            // add role to user
             addRoleToUser(user.getUsername(), role.getRoleName());
 
+            // add store
             Store store = Mapper.map(sellerSignUpDTO, Store.class);
             storeRepo.save(store);
 
+            // add seller details, user and store to seller details
             SellerDetails sellerDetails = Mapper.map(sellerSignUpDTO, SellerDetails.class);
             sellerDetails.setUser(user);
             sellerDetails.setStore(store);
@@ -99,7 +104,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .code(CREATED_CODE)
                     .message(CREATED)
                     .build();
-        }catch (Exception ex){
+
+        } catch (Exception ex) {
             responseDTO = ResponseDTO.builder()
                     .code(INTERNAL_SERVER_ERROR_CODE)
                     .message(BAD_CREDENTIALS)
@@ -109,12 +115,66 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return responseDTO;
     }
 
+    @Transactional
     @Override
-    public AppUser saveUser(AppUser user) {
-        log.info("Saving new USER {} to the DB", user.getUsername());
+    public ResponseDTO updateCustomerProfile(CustomerDTO customerDTO) {
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        ResponseDTO responseDTO;
+
+        try{
+            AppUser user = findByUsername(customerDTO.getUsername());
+            user.setPhoneNumber(customerDTO.getPhoneNumber());
+            user.setFirstName(customerDTO.getFirstName());
+            user.setLastName(customerDTO.getLastName());
+            user.setCountry(customerDTO.getCountry());
+            user.setCity(customerDTO.getCity());
+            user.setProfilePictureUrl(customerDTO.getProfilePictureUrl());
+            userRepo.save(user);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(UPDATED_CODE)
+                    .message(UPDATED)
+                    .response(customerDTO)
+                    .build();
+
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(CANNOT_BE_UPDATED)
+                    .build();
+        }
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO updateSellerProfile(SellerSignUpDTO sellerSignUpDTO) {
+        return null;
+    }
+
+    @Override
+    public ResponseDTO getCustomer(String username) {
+
+        ResponseDTO responseDTO;
+
+        try {
+            AppUser user = findByUsername(username);
+            CustomerDTO customerDTO = Mapper.map(user, CustomerDTO.class);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(SUCCESS_CODE)
+                    .response(customerDTO)
+                    .build();
+
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(NOT_FOUND_CODE)
+                    .message(NOT_FOUND_MESSAGE)
+                    .build();
+        }
+
+
+        return responseDTO;
     }
 
     @Override
@@ -144,12 +204,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
 
-    @Override
     public AppUser findByUsername(String username) {
         return userRepo.findByUsername(username);
     }
 
-    @Override
     public AppUser findByEmail(String email) {
         return userRepo.findByEmail(email);
     }

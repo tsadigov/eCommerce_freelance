@@ -1,20 +1,11 @@
 package com.project.ecommerce.controller;
 
-import com.project.ecommerce.dto.CustomerSignUpDTO;
-import com.project.ecommerce.dto.ResponseDTO;
-import com.project.ecommerce.dto.SellerSignUpDTO;
-import com.project.ecommerce.dto.SignUpDTO;
+import com.project.ecommerce.dto.*;
 import com.project.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import static com.project.ecommerce.bootstrap.Constants.CREATED;
-import static com.project.ecommerce.bootstrap.Constants.CREATED_CODE;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/user")
@@ -24,8 +15,17 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/{username}")
+    ResponseEntity<ResponseDTO> getCustomer(@PathVariable String username){
+
+        ResponseDTO responseDTO = userService.getCustomer(username);
+
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
     @PostMapping(path = "/register/customer")
-    ResponseEntity<ResponseDTO> signUp(@RequestBody CustomerSignUpDTO customerSignUpDTO) {
+    ResponseEntity<ResponseDTO> signUpCustomer(@RequestBody CustomerSignUpDTO customerSignUpDTO) {
 
         log.info("Request body -> {}", customerSignUpDTO);
 
@@ -36,12 +36,20 @@ public class UserController {
     }
 
     @PostMapping(path = "/register/seller")
-    ResponseEntity<ResponseDTO> signUp(@RequestBody SellerSignUpDTO sellerSignUpDTO) {
+    ResponseEntity<ResponseDTO> signUpSeller(@RequestBody SellerSignUpDTO sellerSignUpDTO) {
 
         log.info("Request body -> {}", sellerSignUpDTO);
 
         ResponseDTO responseDTO = userService.sellerSignUp(sellerSignUpDTO);
 
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
+    @PutMapping("/update/customer")
+    ResponseEntity<ResponseDTO> updateCustomerProfile(@RequestBody CustomerDTO customerDTO){
+
+        ResponseDTO responseDTO = userService.updateCustomerProfile(customerDTO);
         return ResponseEntity.ok()
                 .body(responseDTO);
     }
