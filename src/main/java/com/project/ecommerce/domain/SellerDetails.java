@@ -10,36 +10,27 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AppUserDetails {
+public class SellerDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false)
-    private String phoneNumber;
-
+    @Column(unique = true, nullable = false)
     private String postalCode;
 
+    @Column(unique = true, nullable = false)
     private String address;
 
-    @Column(nullable = false)
-    private String country;
-
-    @Column(nullable = false)
-    private String city;
+    @Column(unique = true, nullable = false)
+    private String balance;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private AppUser userFk;
+    @JoinColumn(name = "user", referencedColumnName = "id")
+    private AppUser user;
 
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "store", referencedColumnName = "id")
     private Store store;
 
 }

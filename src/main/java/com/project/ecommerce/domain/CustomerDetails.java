@@ -11,23 +11,18 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Store {
+public class CustomerDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user", referencedColumnName = "id")
+    private AppUser user;
 
-    private String storeUrl;
+    @OneToMany(mappedBy = "customerDetails")
+    private Set<ShippingDetails> shippingDetails;
 
-    private String logoUrl;
-
-    @OneToMany(mappedBy = "store")
-    private Set<Product> products;
-
-    @OneToOne(mappedBy = "store")
-    private SellerDetails sellerDetails;
 
 }

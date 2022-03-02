@@ -1,11 +1,8 @@
 package com.project.ecommerce.service;
 
-import com.project.ecommerce.dao.AppUserDetailsRepo;
-import com.project.ecommerce.dao.AppUserRepo;
-import com.project.ecommerce.dao.RoleRepo;
-import com.project.ecommerce.dao.StoreRepo;
+import com.project.ecommerce.dao.*;
 import com.project.ecommerce.domain.AppUser;
-import com.project.ecommerce.domain.AppUserDetails;
+import com.project.ecommerce.domain.CustomerDetails;
 import com.project.ecommerce.domain.Role;
 import com.project.ecommerce.domain.Store;
 import com.project.ecommerce.dto.SignUpDTO;
@@ -37,7 +34,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final AppUserRepo userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
-    private final AppUserDetailsRepo employeeRepo;
+    private final CustomerDetailsRepo employeeRepo;
     private final StoreRepo storeRepo;
 
     @Override
@@ -77,16 +74,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         addRoleToUser(user.getUsername(), role.getRoleName());
 
         // save employee
-        AppUserDetails userDetails = new AppUserDetails();
-        userDetails.setFirstName(signUpDTO.getFirstName());
-        userDetails.setLastName(signUpDTO.getLastName());
-        userDetails.setPhoneNumber(signUpDTO.getPhoneNumber());
-        userDetails.setPostalCode(signUpDTO.getPostalCode());
-        userDetails.setAddress(signUpDTO.getAddress());
-        userDetails.setCountry(signUpDTO.getCountry());
-        userDetails.setCity(signUpDTO.getCity());
-        userDetails.setUserFk(user);
-        userDetails.setStore(store);
+        CustomerDetails userDetails = new CustomerDetails();
+//        userDetails.setFirstName(signUpDTO.getFirstName());
+//        userDetails.setLastName(signUpDTO.getLastName());
+//        userDetails.setPhoneNumber(signUpDTO.getPhoneNumber());
+//        userDetails.setPostalCode(signUpDTO.getPostalCode());
+//        userDetails.setAddress(signUpDTO.getAddress());
+//        userDetails.setCountry(signUpDTO.getCountry());
+//        userDetails.setCity(signUpDTO.getCity());
+//        userDetails.setUserFk(user);
+//        userDetails.setStore(store);
         employeeRepo.save(userDetails);
     }
 

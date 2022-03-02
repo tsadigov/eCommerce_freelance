@@ -11,23 +11,16 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Store {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    private String storeUrl;
-
-    private String logoUrl;
-
-    @OneToMany(mappedBy = "store")
-    private Set<Product> products;
-
-    @OneToOne(mappedBy = "store")
-    private SellerDetails sellerDetails;
+    @OneToMany(mappedBy="category")
+    private Set<Subcategory> subcategories;
 
 }

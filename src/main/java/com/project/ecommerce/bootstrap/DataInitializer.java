@@ -15,7 +15,7 @@ import java.util.ArrayList;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
-@Component
+//@Component
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
@@ -29,9 +29,9 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String ...args) throws Exception {
 
-        storeRepo.save(new Store(null, "Store 1"));
-        storeRepo.save(new Store(null, "Store 2"));
-        storeRepo.save(new Store(null, "Store 3"));
+//        storeRepo.save(new Store(null, "Store 1"));
+//        storeRepo.save(new Store(null, "Store 2"));
+//        storeRepo.save(new Store(null, "Store 3"));
 
         log.info("stores saved");
 
@@ -40,8 +40,8 @@ public class DataInitializer implements CommandLineRunner {
         roleService.saveRole(new Role(null, ROLE_CUSTOMER));
         log.info("Added roles to db");
 
-        AppUser user = new AppUser(null, "john", "john@gmail.com", "123Aaa",null, new ArrayList<>());
-        service.saveUser(user);
+//        AppUser user = new AppUser(null, "john", "john@gmail.com", "123Aaa",null, new ArrayList<>());
+//        service.saveUser(user);
         service.addRoleToUser("john",ROLE_ADMIN);
         log.info("Created default admin user");
 
