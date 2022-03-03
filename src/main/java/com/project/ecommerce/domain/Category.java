@@ -1,6 +1,7 @@
 package com.project.ecommerce.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class Category {
 
     @Id
@@ -18,7 +20,7 @@ public class Category {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String categoryName;
 
     @OneToMany(mappedBy="category")
     private Set<Subcategory> subcategories;

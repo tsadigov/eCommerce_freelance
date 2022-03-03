@@ -7,8 +7,9 @@ public class Constants {
 
     public static final String SUCCESS = "Success";
     public static final String CREATED = "Created";
+    public static final String CANNOT_BE_CREATED = "Cannot be created";
     public static final String UPDATED = "Updated";
-    public static final String CANNOT_BE_UPDATED = "Updated";
+    public static final String CANNOT_BE_UPDATED = "Cannot be updated";
     public static final String DELETED = "Deleted";
     public static final int DELETED_CODE = 204;
     public static final int UPDATED_CODE = 203;

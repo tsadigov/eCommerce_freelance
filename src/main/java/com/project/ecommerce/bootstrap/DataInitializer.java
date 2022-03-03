@@ -3,10 +3,10 @@ package com.project.ecommerce.bootstrap;
 import com.project.ecommerce.configuration.PasswordConfig;
 import com.project.ecommerce.dao.AppUserRepo;
 import com.project.ecommerce.dao.StoreRepo;
-import com.project.ecommerce.domain.AppUser;
-import com.project.ecommerce.domain.Role;
-import com.project.ecommerce.domain.Store;
+import com.project.ecommerce.domain.*;
+import com.project.ecommerce.dto.SubCategoryDTO;
 import com.project.ecommerce.service.RoleService;
+import com.project.ecommerce.service.SubCategoryService;
 import com.project.ecommerce.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
     private final StoreRepo storeRepo;
     private final AppUserRepo userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final SubCategoryService subCategoryService;
 //    private final
 
     @Override
@@ -38,7 +39,12 @@ public class DataInitializer implements CommandLineRunner {
 //        storeRepo.save(new Store(null, "Store 2"));
 //        storeRepo.save(new Store(null, "Store 3"));
 
-        log.info("stores saved");
+        SubCategoryDTO subCategoryDTO1 = new SubCategoryDTO("Man", "Clothes");
+        SubCategoryDTO subCategoryDTO2 = new SubCategoryDTO("Woman", "Clothes");
+        subCategoryService.create(subCategoryDTO1);
+        subCategoryService.create(subCategoryDTO2);
+
+        log.info("Categories saved");
 
         roleService.saveRole(new Role(null, ROLE_ADMIN));
         roleService.saveRole(new Role(null, ROLE_SELLER));

@@ -1,6 +1,7 @@
 package com.project.ecommerce.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.util.Set;
 
 @Entity
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Subcategory {
@@ -18,7 +20,7 @@ public class Subcategory {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String subCategoryName;
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable=false)
