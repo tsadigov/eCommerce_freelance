@@ -1,13 +1,12 @@
 package com.project.ecommerce.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class SellerDetails {
@@ -25,11 +24,11 @@ public class SellerDetails {
     @Column(nullable = false)
     private Float balance;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne
     @JoinColumn(name = "user", referencedColumnName = "id")
     private AppUser user;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne
     @JoinColumn(name = "store", referencedColumnName = "id")
     private Store store;
 

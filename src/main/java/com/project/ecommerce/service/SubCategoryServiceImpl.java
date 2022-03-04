@@ -7,11 +7,15 @@ import com.project.ecommerce.domain.Subcategory;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.dto.SubCategoryDTO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
@@ -25,12 +29,14 @@ public class SubCategoryServiceImpl implements SubCategoryService {
 
     @Override
     public ResponseDTO getOne(Long id) {
-        Subcategory subcategory = subcategoryRepo.getById(id);
+        Optional<Subcategory> subcategory = subcategoryRepo.findById(id);
+        log.info("Subcategory: {}", subcategory.get());
+
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)
                 .message(SUCCESS)
-                .response(subcategory)
+                .response(subcategory.get().getSubCategoryName())
                 .build();
 
         return responseDTO;
@@ -39,6 +45,17 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     @Override
     public ResponseDTO getAll() {
         List<Subcategory> subcategories = subcategoryRepo.findAll();
+
+//        List<SubCategoryDTO> subCategoryDTOList = new ArrayList<>();
+//
+//        for (Subcategory subcategory : subcategories) {
+//            SubCategoryDTO subCategoryDTO = SubCategoryDTO.builder()
+//                    .subCategoryName(subcategory.getSubCategoryName())
+//                    .categoryName(subcategory.getCategory().getCategoryName())
+//                    .build();
+//            subCategoryDTOList.add(subCategoryDTO);
+//        }
+
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)
                 .message(SUCCESS)

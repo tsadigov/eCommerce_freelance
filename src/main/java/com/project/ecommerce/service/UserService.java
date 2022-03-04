@@ -1,13 +1,12 @@
 package com.project.ecommerce.service;
 
-import com.project.ecommerce.dto.CustomerDTO;
-import com.project.ecommerce.dto.CustomerSignUpDTO;
-import com.project.ecommerce.dto.ResponseDTO;
-import com.project.ecommerce.dto.SellerSignUpDTO;
+import com.project.ecommerce.dto.*;
 
 public interface UserService {
 
     ResponseDTO getCustomer(String username);
+
+    ResponseDTO getSeller(String username);
 
     void addRoleToUser(String username, String roleName);
 
@@ -17,6 +16,6 @@ public interface UserService {
 
     ResponseDTO updateCustomerProfile(CustomerDTO customerSignUpDTO);
 
-    ResponseDTO updateSellerProfile(SellerSignUpDTO sellerSignUpDTO);
+    ResponseDTO updateSellerProfile(SellerDTO sellerDTO);
 
 }

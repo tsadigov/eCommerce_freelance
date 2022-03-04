@@ -2,10 +2,7 @@ package com.project.ecommerce.service;
 
 import com.project.ecommerce.dao.*;
 import com.project.ecommerce.domain.*;
-import com.project.ecommerce.dto.CustomerDTO;
-import com.project.ecommerce.dto.CustomerSignUpDTO;
-import com.project.ecommerce.dto.ResponseDTO;
-import com.project.ecommerce.dto.SellerSignUpDTO;
+import com.project.ecommerce.dto.*;
 import com.project.ecommerce.exception.AlreadyExistException;
 import com.project.ecommerce.exception.ResourceNotFoundException;
 import com.project.ecommerce.utils.Mapper;
@@ -148,8 +145,40 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ResponseDTO updateSellerProfile(SellerSignUpDTO sellerSignUpDTO) {
-        return null;
+    public ResponseDTO updateSellerProfile(SellerDTO sellerDTO) {
+        ResponseDTO responseDTO;
+
+        try{
+            AppUser user = findByUsername(sellerDTO.getUsername());
+            user.setPhoneNumber(sellerDTO.getPhoneNumber());
+            user.setFirstName(sellerDTO.getFirstName());
+            user.setLastName(sellerDTO.getLastName());
+            user.setCountry(sellerDTO.getCountry());
+            user.setCity(sellerDTO.getCity());
+            user.setProfilePictureUrl(sellerDTO.getProfilePictureUrl());
+            userRepo.save(user);
+            log.info("Seller User {} updated", user.getUsername());
+
+            SellerDetails sellerDetails = sellerDetailsRepo.findByUser(user);
+            sellerDetails.setPostalCode(sellerDTO.getPostalCode());
+            sellerDetails.setAddress(sellerDTO.getAddress());
+            sellerDetailsRepo.save(sellerDetails);
+            log.info("Sellerdetails for user {} updated", user.getUsername());
+
+            responseDTO = ResponseDTO.builder()
+                    .code(UPDATED_CODE)
+                    .message(UPDATED)
+                    .response(sellerDTO)
+                    .build();
+
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(CANNOT_BE_UPDATED)
+                    .build();
+        }
+
+        return responseDTO;
     }
 
     @Override
@@ -178,6 +207,43 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public ResponseDTO getSeller(String username) {
+
+        ResponseDTO responseDTO;
+
+        try {
+            AppUser user = findByUsername(username);
+            SellerDetails sellerDetails = sellerDetailsRepo.findByUser(user);
+            SellerDTO sellerDTO = SellerDTO.builder()
+                    .username(username)
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .country(user.getCountry())
+                    .city(user.getCity())
+                    .profilePictureUrl(user.getProfilePictureUrl())
+                    .postalCode(sellerDetails.getPostalCode())
+                    .address(sellerDetails.getAddress())
+                    .build();
+
+            responseDTO = ResponseDTO.builder()
+                    .code(SUCCESS_CODE)
+                    .response(sellerDTO)
+                    .build();
+
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(NOT_FOUND_CODE)
+                    .message(NOT_FOUND_MESSAGE)
+                    .build();
+        }
+
+
+        return responseDTO;
+    }
+
+    @Override
     public void addRoleToUser(String username, String roleName) {
         log.info("Adding rol {} to user {}", username, roleName);
         AppUser user = userRepo.findByUsername(username);
@@ -186,6 +252,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<Role> roles = new ArrayList<>();
         roles.add(role);
         user.setRoles(roles);
+        userRepo.save(user);
     }
 
     @Override

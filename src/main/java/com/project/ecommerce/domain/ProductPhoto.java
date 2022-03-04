@@ -1,5 +1,6 @@
 package com.project.ecommerce.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,9 @@ public class ProductPhoto {
     @Column(nullable = false)
     private String photoUrl;
 
-    @OneToOne()
+//    @JsonIgnore
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="product")
     private Product product;
 
 }

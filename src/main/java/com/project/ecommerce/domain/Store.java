@@ -1,14 +1,16 @@
 package com.project.ecommerce.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Store {
@@ -24,10 +26,19 @@ public class Store {
 
     private String storeLogoUrl;
 
-    @OneToMany(mappedBy = "store")
+    @OneToMany(mappedBy = "store", fetch = FetchType.EAGER)
+    @Fetch(value= FetchMode.SELECT)
     private Set<Product> products;
 
     @OneToOne(mappedBy = "store")
     private SellerDetails sellerDetails;
+
+    public Store(Long id, String storeName, String storeUrl, String storeLogoUrl){
+        this.id = id;
+        this.storeName = storeName;
+        this.storeUrl = storeUrl;
+        this.storeLogoUrl = storeLogoUrl;
+    }
+
 
 }

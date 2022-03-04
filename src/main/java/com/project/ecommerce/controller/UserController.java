@@ -15,10 +15,19 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{username}")
+    @GetMapping("/customer/{username}")
     ResponseEntity<ResponseDTO> getCustomer(@PathVariable String username){
 
         ResponseDTO responseDTO = userService.getCustomer(username);
+
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
+    @GetMapping("/seller/{username}")
+    ResponseEntity<ResponseDTO> getSeller(@PathVariable String username){
+
+        ResponseDTO responseDTO = userService.getSeller(username);
 
         return ResponseEntity.ok()
                 .body(responseDTO);
@@ -50,6 +59,14 @@ public class UserController {
     ResponseEntity<ResponseDTO> updateCustomerProfile(@RequestBody CustomerDTO customerDTO){
 
         ResponseDTO responseDTO = userService.updateCustomerProfile(customerDTO);
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
+    @PutMapping("/update/seller")
+    ResponseEntity<ResponseDTO> updateSellerProfile(@RequestBody SellerDTO sellerDTO){
+
+        ResponseDTO responseDTO = userService.updateSellerProfile(sellerDTO);
         return ResponseEntity.ok()
                 .body(responseDTO);
     }

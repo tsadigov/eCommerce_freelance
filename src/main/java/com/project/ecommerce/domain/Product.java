@@ -1,14 +1,15 @@
 package com.project.ecommerce.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
@@ -29,12 +30,15 @@ public class Product {
     @Column(nullable = false)
     private String details;
 
+
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name="subcategory_id", nullable=false)
+    @JoinColumn(name="subcategory_id")
     private Subcategory subcategory;
 
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "store", referencedColumnName = "id")
+    @JoinColumn(name = "store")
     private Store store;
 
     @OneToMany(mappedBy = "product")
@@ -45,5 +49,8 @@ public class Product {
 
     @OneToMany(mappedBy = "product")
     private Set<BasketProduct> basketProducts;
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductPhoto> photos;
 
 }

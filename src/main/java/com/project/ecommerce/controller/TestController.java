@@ -17,8 +17,8 @@ public class TestController {
     private final StoreRepo storeRepo;
 
     @GetMapping
-    public List<Store> Test(){
-        return storeRepo.findAll();
+    public String Test(){
+        return "Test";
     }
 
 }
