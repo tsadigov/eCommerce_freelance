@@ -14,6 +14,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,13 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String ...args) throws Exception {
+
+        // create path for images if not exists
+        String path = "./uploads/profile";
+        File pathAsFile = new File(path);
+        if (!pathAsFile.exists()) {
+            pathAsFile.mkdirs();
+        }
 
         Store store1 = new Store(null, "Store 1", null, null);
         storeRepo.save(store1);
