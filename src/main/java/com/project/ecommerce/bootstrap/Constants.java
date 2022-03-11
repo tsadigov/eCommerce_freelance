@@ -2,6 +2,9 @@ package com.project.ecommerce.bootstrap;
 
 public class Constants {
 
+    public static final String DIRECTORY = "./uploads/profile/";
+    public static final String PROFILE_PHOTO_END = "-profile-picture.png";
+
     public static final String BAD_CREDENTIALS = "Bad credentials";
     public static final String TOKEN_CREATED = "Token created";
 
