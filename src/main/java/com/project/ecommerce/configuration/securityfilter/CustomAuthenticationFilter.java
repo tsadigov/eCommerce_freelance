@@ -3,6 +3,7 @@ package com.project.ecommerce.configuration.securityfilter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.ecommerce.dto.AuthDTO;
 import com.project.ecommerce.dto.LoginDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import lombok.SneakyThrows;
@@ -22,10 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
-
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -50,13 +53,12 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
             username = loginDTO.getUsername();
             password = loginDTO.getPassword();
 
-        }
-        catch (Exception e){
-            log.info("Error while logging in: {}",e.getMessage());
+        } catch (Exception e) {
+            log.info("Error while logging in: {}", e.getMessage());
             throw new BadCredentialsException(BAD_CREDENTIALS);
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username,password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         return authenticationManager.authenticate(authenticationToken);
     }
 
@@ -69,7 +71,7 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + ACCESS_TOKEN_DURATION))
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim(ROLES,user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim(ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
                 .sign(algorithm);
 
         String refresh_token = JWT.create()
@@ -78,16 +80,24 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
                 .withIssuer(request.getRequestURL().toString())
                 .sign(algorithm);
 
-        response.setHeader(ACCESS_TOKEN,access_token);
-        response.setHeader(REFRESH_TOKEN,refresh_token);
-        response.setHeader("Access-Control-Allow-Origin","*");
+//        response.setHeader(ACCESS_TOKEN, access_token);
+//        response.setHeader(REFRESH_TOKEN, refresh_token);
+//        response.setHeader("Access-Control-Allow-Origin", "*");
+//        response.setHeader("Access-Control-Expose-Headers", "x-dl-units-left, x-dl-units, access_token");
+
+        AuthDTO tokens = AuthDTO.builder()
+                .accessToken(access_token)
+                .refreshToken(refresh_token)
+                .build();
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)
                 .message(SUCCESS)
+                .response(tokens)
                 .build();
 
-        new ObjectMapper().writeValue(response.getOutputStream(), ResponseEntity.ok().body(responseDTO));
+        response.setContentType(APPLICATION_JSON_VALUE);
+        new ObjectMapper().writeValue(response.getOutputStream(), responseDTO);
 
     }
 }
