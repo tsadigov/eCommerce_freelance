@@ -5,10 +5,24 @@ import com.project.ecommerce.dto.ProductDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import static com.project.ecommerce.bootstrap.Constants.*;
+import static java.nio.file.Files.copy;
+import static java.nio.file.Paths.get;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @RestController
 @RequiredArgsConstructor
@@ -36,6 +50,49 @@ public class ProductController {
 
         return ResponseEntity.ok()
                 .body(responseDTO);
+    }
+
+    @GetMapping(
+            value = "/get-product-picture/{pictureName}",
+            produces = MediaType.IMAGE_PNG_VALUE
+    )
+    public @ResponseBody
+    byte[] getProductPicture(@PathVariable String pictureName) throws IOException {
+        String imageDir = Paths.get("").toAbsolutePath() + "/uploads/product/" + pictureName;
+        imageDir.replace("\\", "/");
+        File fi = new File(imageDir);
+        byte[] fileContent;
+
+        if (fi.exists()) {
+            fileContent = Files.readAllBytes(fi.toPath());
+        } else {
+            InputStream in = this.getClass().getResourceAsStream("/static/product-icon.png");
+            fileContent = in.readAllBytes();
+        }
+        return fileContent;
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<ResponseDTO> createProduct(@RequestPart("file") MultipartFile file,
+                                                @RequestPart("product-name") String name,
+                                                @RequestParam("cost") Float cost,
+                                                @RequestParam("amount") Long amount,
+                                                @RequestParam("storeId") Long storeId,
+                                                @RequestParam("subcategory") Long subCategoryId,
+                                                @RequestPart("details") String details) throws IOException {
+
+        ProductDTO productDTO = ProductDTO.builder()
+                .name(name)
+                .cost(cost)
+                .amount(amount)
+                .storeId(storeId)
+                .subcategoryId(subCategoryId)
+                .details(details)
+                .build();
+
+        ResponseDTO responseDTO = productService.createProduct(file, productDTO);
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
 }

@@ -43,9 +43,14 @@ public class DataInitializer implements CommandLineRunner {
 
         // create path for images if not exists
         String path = "./uploads/profile";
+        String pathProduct = "./uploads/product";
         File pathAsFile = new File(path);
+        File pathProductAsFile = new File(pathProduct);
         if (!pathAsFile.exists()) {
             pathAsFile.mkdirs();
+        }
+        if (!pathProductAsFile.exists()) {
+            pathProductAsFile.mkdirs();
         }
 
         Store store1 = new Store(null, "Store 1", null, null);

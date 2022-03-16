@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -72,7 +71,7 @@ public class UserController {
                 .body(responseDTO);
     }
 
-    @PutMapping("/update/customer")
+    @PostMapping("/update/customer")
     ResponseEntity<ResponseDTO> updateCustomerProfile(@RequestBody CustomerDTO customerDTO) {
 
         ResponseDTO responseDTO = userService.updateCustomerProfile(customerDTO);
@@ -89,7 +88,7 @@ public class UserController {
     }
 
     @PostMapping("/upload-profile-picture")
-    public ResponseEntity<String> uploadFile(@RequestPart("file") MultipartFile file, @RequestPart("username") String username) throws IOException {
+    public ResponseEntity<String> uploadProfilePhoto(@RequestPart("file") MultipartFile file, @RequestPart("username") String username) throws IOException {
 
         String fileName = StringUtils.cleanPath(username + PROFILE_PHOTO_END);
         Path fileStorage = get(DIRECTORY, fileName).toAbsolutePath().normalize();

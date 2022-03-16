@@ -11,6 +11,7 @@ import java.util.Set;
 @Setter
 @Builder
 @AllArgsConstructor
+@ToString
 @NoArgsConstructor
 public class Product {
 
@@ -30,6 +31,7 @@ public class Product {
     @Column(nullable = false)
     private String details;
 
+    private String photoUrl;
 
     @JsonIgnore
     @ManyToOne
@@ -50,7 +52,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private Set<BasketProduct> basketProducts;
 
-    @OneToMany(mappedBy = "product")
-    private Set<ProductPhoto> photos;
+//    @OneToMany(mappedBy = "product")
+//    private Set<ProductPhoto> photos;
 
 }

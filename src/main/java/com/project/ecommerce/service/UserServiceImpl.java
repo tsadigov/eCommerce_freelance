@@ -162,6 +162,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             SellerDetails sellerDetails = sellerDetailsRepo.findByUser(user);
             sellerDetails.setPostalCode(sellerDTO.getPostalCode());
             sellerDetails.setAddress(sellerDTO.getAddress());
+            sellerDetails.setStore(storeRepo.getById(sellerDTO.getStoreId()));
             sellerDetailsRepo.save(sellerDetails);
             log.info("Sellerdetails for user {} updated", user.getUsername());
 
@@ -202,7 +203,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .build();
         }
 
-
         return responseDTO;
     }
 
@@ -225,6 +225,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .profilePictureUrl(user.getProfilePictureUrl())
                     .postalCode(sellerDetails.getPostalCode())
                     .address(sellerDetails.getAddress())
+                    .storeId(sellerDetails.getStore().getId())
                     .build();
 
             responseDTO = ResponseDTO.builder()
@@ -238,7 +239,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                     .message(NOT_FOUND_MESSAGE)
                     .build();
         }
-
 
         return responseDTO;
     }

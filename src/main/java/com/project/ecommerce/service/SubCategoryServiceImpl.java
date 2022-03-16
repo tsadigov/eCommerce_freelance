@@ -6,16 +6,14 @@ import com.project.ecommerce.domain.Category;
 import com.project.ecommerce.domain.Subcategory;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.dto.SubCategoryDTO;
+import com.project.ecommerce.utils.Mapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
@@ -45,7 +43,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
     @Override
     public ResponseDTO getAll() {
         List<Subcategory> subcategories = subcategoryRepo.findAll();
-
+        List<SubCategoryDTO> subCategoryDTOList = Mapper.mapAll(subcategories, SubCategoryDTO.class);
 //        List<SubCategoryDTO> subCategoryDTOList = new ArrayList<>();
 //
 //        for (Subcategory subcategory : subcategories) {
@@ -59,7 +57,7 @@ public class SubCategoryServiceImpl implements SubCategoryService {
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)
                 .message(SUCCESS)
-                .response(subcategories)
+                .response(subCategoryDTOList)
                 .build();
 
         return responseDTO;

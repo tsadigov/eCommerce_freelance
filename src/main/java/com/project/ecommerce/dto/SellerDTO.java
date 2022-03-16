@@ -21,5 +21,6 @@ public class SellerDTO {
     private String profilePictureUrl;
     private String postalCode;
     private String address;
+    private Long storeId;
 
 }

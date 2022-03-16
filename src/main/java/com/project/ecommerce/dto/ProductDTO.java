@@ -14,8 +14,8 @@ public class ProductDTO {
     private Long amount;
     private Float cost;
     private String details;
-    private Long subCategoryId;
+    private Long subcategoryId;
     private Long storeId;
-    private String imageUrl;
+    private String photoUrl;
 
 }
