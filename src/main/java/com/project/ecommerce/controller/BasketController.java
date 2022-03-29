@@ -37,4 +37,11 @@ public class BasketController {
                 .body(responseDTO);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO> delete(@PathVariable Long id){
+        ResponseDTO responseDTO = basketService.delete(id);
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
 }

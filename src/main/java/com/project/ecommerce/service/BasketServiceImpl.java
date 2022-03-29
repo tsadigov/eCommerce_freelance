@@ -30,7 +30,6 @@ public class BasketServiceImpl implements BasketService{
 
         System.out.println(basketProductCreationDTO.getProductId()+ " "+ basketProductCreationDTO.getAmount()+ " "+ basketProductCreationDTO.getUsername());
 
-
         BasketProduct basketProduct = BasketProduct.builder()
                 .amount(basketProductCreationDTO.getAmount())
                 .user(userRepo.findByUsername(basketProductCreationDTO.getUsername()))
@@ -58,13 +57,27 @@ public class BasketServiceImpl implements BasketService{
     @Override
     public ResponseDTO updateAmount(BasketProductUpdateDTO basketProductUpdateDTO) {
 
-        BasketProduct basketProduct = basketProductRepo.getById(basketProductUpdateDTO.getId());
+        BasketProduct basketProduct = basketProductRepo.findById(basketProductUpdateDTO.getId()).get();
         basketProduct.setAmount(basketProductUpdateDTO.getAmount());
+        basketProductRepo.save(basketProduct);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(UPDATED_CODE)
                 .message(UPDATED)
                 .response(basketProduct)
+                .build();
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO delete(Long id) {
+        BasketProduct basketProduct = basketProductRepo.findById(id).get();
+        basketProductRepo.delete(basketProduct);
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .code(DELETED_CODE)
+                .message(DELETED)
                 .build();
 
         return responseDTO;

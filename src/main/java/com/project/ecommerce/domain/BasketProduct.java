@@ -6,7 +6,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-@NamedNativeQuery(name = "BasketProduct.getAllByUsername_named",
+@NamedNativeQuery(name = "BasketProduct.getAllByUsername",
                   query = """
                     SELECT bp.id as id, bp.product_id as productId, bp.amount as basketAmount, p.amount as productAmount, p.name as productName, p.details as productDetails, p.photo_url as productPhotoUrl, p.cost as cost, s.store_name as storeName, u.username as username FROM `e-commerce`.basket_product as bp
                     INNER JOIN `e-commerce`.product as p on bp.product_id = p.id

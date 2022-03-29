@@ -16,4 +16,6 @@ public interface BasketService {
 
     ResponseDTO updateAmount(BasketProductUpdateDTO basketProductUpdateDTO);
 
+    ResponseDTO delete(Long id);
+
 }
