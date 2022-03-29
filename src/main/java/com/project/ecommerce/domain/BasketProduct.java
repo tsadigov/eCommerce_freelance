@@ -8,10 +8,11 @@ import javax.persistence.*;
 
 @NamedNativeQuery(name = "BasketProduct.getAllByUsername_named",
                   query = """
-                    SELECT bp.id as id, bp.product_id as productId, bp.amount as basketAmount, p.amount as productAmount, p.name as productName, p.details as productDetails, p.photo_url as productPhotoUrl, p.cost as cost, s.store_name as storeName, u.username as username FROM `e-commerce`.basket_product as bp\s
+                    SELECT bp.id as id, bp.product_id as productId, bp.amount as basketAmount, p.amount as productAmount, p.name as productName, p.details as productDetails, p.photo_url as productPhotoUrl, p.cost as cost, s.store_name as storeName, u.username as username FROM `e-commerce`.basket_product as bp
                     INNER JOIN `e-commerce`.product as p on bp.product_id = p.id
                     INNER JOIN `e-commerce`.app_user as u on bp.user_id = u.id
-                    INNER JOIN `e-commerce`.store as s on s.id = p.store""",
+                    INNER JOIN `e-commerce`.store as s on s.id = p.store
+                    WHERE username = :username""",
                     resultSetMapping = "Mapping.BasketProductDTO")
 @SqlResultSetMapping(name = "Mapping.BasketProductDTO",
                     classes = @ConstructorResult(targetClass = BasketProductDTO.class,

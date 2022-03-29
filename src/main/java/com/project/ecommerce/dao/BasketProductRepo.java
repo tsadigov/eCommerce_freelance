@@ -18,6 +18,6 @@ public interface BasketProductRepo extends JpaRepository<BasketProduct, Long> {
     List<BasketProductDTO> getAllByUsername();
 
     @Query(nativeQuery = true)
-    List<BasketProductDTO> getAllByUsername_named();
+    List<BasketProductDTO> getAllByUsername(String username);
 
 }

@@ -2,6 +2,7 @@ package com.project.ecommerce.controller;
 
 import com.project.ecommerce.dto.BasketProductCreationDTO;
 import com.project.ecommerce.dto.BasketProductDTO;
+import com.project.ecommerce.dto.BasketProductUpdateDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.service.BasketService;
 import lombok.RequiredArgsConstructor;
@@ -20,14 +21,20 @@ public class BasketController {
     @PostMapping
     public ResponseEntity<ResponseDTO> create(@RequestBody BasketProductCreationDTO basketProductCreationDTO){
         ResponseDTO responseDTO = basketService.create(basketProductCreationDTO);
-
         return ResponseEntity.ok()
                 .body(responseDTO);
     }
 
-    @GetMapping
-    public List<BasketProductDTO> getAll(){
-        return basketService.getAll();
+    @GetMapping("/{username}")
+    public List<BasketProductDTO> getAll(@PathVariable String username){
+        return basketService.getAllByUsername(username);
+    }
+
+    @PutMapping
+    public ResponseEntity<ResponseDTO> updateAmount(@RequestBody BasketProductUpdateDTO basketProductUpdateDTO){
+        ResponseDTO responseDTO = basketService.updateAmount(basketProductUpdateDTO);
+        return ResponseEntity.ok()
+                .body(responseDTO);
     }
 
 }
