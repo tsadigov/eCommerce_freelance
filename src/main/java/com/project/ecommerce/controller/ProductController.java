@@ -75,18 +75,18 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<ResponseDTO> createProduct(@RequestPart("file") MultipartFile file,
                                                 @RequestPart("product-name") String name,
-                                                @RequestParam("cost") Float cost,
-                                                @RequestParam("amount") Long amount,
-                                                @RequestParam("storeId") Long storeId,
-                                                @RequestParam("subcategory") Long subCategoryId,
+                                                @RequestPart("cost") String cost,
+                                                @RequestPart("amount") String amount,
+                                                @RequestPart("storeId") String storeId,
+                                                @RequestPart("subcategory") String subCategoryId,
                                                 @RequestPart("details") String details) throws IOException {
 
         ProductDTO productDTO = ProductDTO.builder()
                 .name(name)
-                .cost(cost)
-                .amount(amount)
-                .storeId(storeId)
-                .subcategoryId(subCategoryId)
+                .cost(Float.parseFloat(cost))
+                .amount(Long.parseLong(amount))
+                .storeId(Long.parseLong(storeId))
+                .subcategoryId(Long.parseLong(subCategoryId))
                 .details(details)
                 .build();
 

@@ -56,8 +56,8 @@ public class DataInitializer implements CommandLineRunner {
         Store store1 = new Store(null, "Store 1", null, null);
         storeRepo.save(store1);
 
-        SubCategoryDTO subCategoryDTO1 = new SubCategoryDTO("Man", "Clothes");
-        SubCategoryDTO subCategoryDTO2 = new SubCategoryDTO("Woman", "Clothes");
+        SubCategoryDTO subCategoryDTO1 = new SubCategoryDTO(null,"Man", "Clothes");
+        SubCategoryDTO subCategoryDTO2 = new SubCategoryDTO(null, "Woman", "Clothes");
         subCategoryService.create(subCategoryDTO1);
         subCategoryService.create(subCategoryDTO2);
 
