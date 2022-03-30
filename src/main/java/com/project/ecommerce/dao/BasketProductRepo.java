@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BasketProductRepo extends JpaRepository<BasketProduct, Long> {
 
@@ -19,5 +20,8 @@ public interface BasketProductRepo extends JpaRepository<BasketProduct, Long> {
 
     @Query(nativeQuery = true)
     List<BasketProductDTO> getAllByUsername(String username);
+
+    @Query()
+    Optional<BasketProduct> findBasketProductByProductId(Long id);
 
 }

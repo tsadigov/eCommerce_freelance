@@ -30,6 +30,13 @@ public class BasketController {
         return basketService.getAllByUsername(username);
     }
 
+    @GetMapping("/product/{id}")
+    public ResponseEntity<ResponseDTO> getOne(@PathVariable Long id){
+        ResponseDTO responseDTO = basketService.getOneByProductId(id);
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
     @PutMapping
     public ResponseEntity<ResponseDTO> updateAmount(@RequestBody BasketProductUpdateDTO basketProductUpdateDTO){
         ResponseDTO responseDTO = basketService.updateAmount(basketProductUpdateDTO);

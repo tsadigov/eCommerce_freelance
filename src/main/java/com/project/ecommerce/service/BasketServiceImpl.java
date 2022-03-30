@@ -4,15 +4,16 @@ import com.project.ecommerce.dao.AppUserRepo;
 import com.project.ecommerce.dao.BasketProductRepo;
 import com.project.ecommerce.dao.ProductRepo;
 import com.project.ecommerce.domain.BasketProduct;
-import com.project.ecommerce.dto.BasketProductCreationDTO;
-import com.project.ecommerce.dto.BasketProductDTO;
-import com.project.ecommerce.dto.BasketProductUpdateDTO;
-import com.project.ecommerce.dto.ResponseDTO;
+import com.project.ecommerce.domain.Product;
+import com.project.ecommerce.dto.*;
+import com.project.ecommerce.utils.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.List;
+import java.util.Optional;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
 
@@ -52,6 +53,20 @@ public class BasketServiceImpl implements BasketService{
 
         List<BasketProductDTO> basketProducts = basketProductRepo.getAllByUsername(username);
         return basketProducts;
+    }
+
+    @Override
+    public ResponseDTO getOneByProductId(Long id) {
+
+        Optional<BasketProduct> basketProduct = basketProductRepo.findBasketProductByProductId(id);
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .code(SUCCESS_CODE)
+                .message(SUCCESS)
+                .response(basketProduct)
+                .build();
+
+        return responseDTO;
     }
 
     @Override
