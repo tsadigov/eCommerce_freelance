@@ -1,18 +1,15 @@
 package com.project.ecommerce.service;
 
-import com.project.ecommerce.dao.AppUserDetailsRepo;
-import com.project.ecommerce.dao.AppUserRepo;
-import com.project.ecommerce.dao.RoleRepo;
-import com.project.ecommerce.dao.StoreRepo;
-import com.project.ecommerce.domain.AppUser;
-import com.project.ecommerce.domain.AppUserDetails;
-import com.project.ecommerce.domain.Role;
-import com.project.ecommerce.domain.Store;
-import com.project.ecommerce.dto.SignUpDTO;
+import com.project.ecommerce.dao.*;
+import com.project.ecommerce.domain.*;
+import com.project.ecommerce.dto.*;
 import com.project.ecommerce.exception.AlreadyExistException;
 import com.project.ecommerce.exception.ResourceNotFoundException;
+import com.project.ecommerce.utils.Mapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpOutputMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,73 +26,221 @@ import java.util.List;
 import static com.project.ecommerce.bootstrap.Constants.*;
 
 @Service
+//@Transactional
 @RequiredArgsConstructor
-@Transactional
 @Slf4j
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final AppUserRepo userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
-    private final AppUserDetailsRepo employeeRepo;
+    private final CustomerDetailsRepo customerDetailsRepo;
+    private final SellerDetailsRepo sellerDetailsRepo;
     private final StoreRepo storeRepo;
 
-    @Override
     @Transactional
-    public void signUp(SignUpDTO signUpDTO) {
-
-        if (findByUsername(signUpDTO.getUsername()) != null)
+    @Override
+    public ResponseDTO customerSignUp(CustomerSignUpDTO customerSignUpDTO) {
+        if (findByUsername(customerSignUpDTO.getUsername()) != null || findByEmail(customerSignUpDTO.getEmail()) != null)
             throw new AlreadyExistException(ALREADY_EXISTS);
 
-        // add store
-        String storeName = signUpDTO.getStoreName();
-        Store store;
-        if (storeRepo.findByName(storeName) != null) {
-            throw new AlreadyExistException("Store with the name "+ storeName + " already exists");
+        ResponseDTO responseDTO = null;
+        Role role = roleRepo.findRoleByRoleName(ROLE_CUSTOMER);
+        try {
+            AppUser user = Mapper.map(customerSignUpDTO, AppUser.class);
+            user.setPassword(passwordEncoder.encode(customerSignUpDTO.getPassword()));
+            userRepo.save(user);
+
+            addRoleToUser(user.getUsername(), role.getRoleName());
+
+            responseDTO = ResponseDTO.builder()
+                    .code(CREATED_CODE)
+                    .message(CREATED)
+                    .build();
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(BAD_CREDENTIALS)
+                    .build();
+            log.info(ex.getMessage());
         }
-        else {
-            store = new Store();
-            store.setName(storeName);
+        return responseDTO;
+    }
+
+    @Transactional
+    @Override
+    public ResponseDTO sellerSignUp(SellerSignUpDTO sellerSignUpDTO) {
+        if (findByUsername(sellerSignUpDTO.getUsername()) != null || findByEmail(sellerSignUpDTO.getEmail()) != null)
+            throw new AlreadyExistException(ALREADY_EXISTS);
+
+        log.info(String.valueOf(sellerSignUpDTO));
+
+        ResponseDTO responseDTO = null;
+        Role role = roleRepo.findRoleByRoleName(ROLE_SELLER);
+
+        try {
+            // Save user
+            AppUser user = Mapper.map(sellerSignUpDTO, AppUser.class);
+            user.setPassword(passwordEncoder.encode(sellerSignUpDTO.getPassword()));
+            userRepo.save(user);
+
+            // add role to user
+            addRoleToUser(user.getUsername(), role.getRoleName());
+
+            // add store
+            Store store = Mapper.map(sellerSignUpDTO, Store.class);
             storeRepo.save(store);
+
+            // add seller details, user and store to seller details
+            SellerDetails sellerDetails = Mapper.map(sellerSignUpDTO, SellerDetails.class);
+            sellerDetails.setUser(user);
+            sellerDetails.setStore(store);
+            sellerDetailsRepo.save(sellerDetails);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(CREATED_CODE)
+                    .message(CREATED)
+                    .build();
+
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(BAD_CREDENTIALS)
+                    .build();
+            log.info(ex.getMessage());
+        }
+        return responseDTO;
+    }
+
+    @Transactional
+    @Override
+    public ResponseDTO updateCustomerProfile(CustomerDTO customerDTO) {
+
+        ResponseDTO responseDTO;
+
+        try{
+            AppUser user = findByUsername(customerDTO.getUsername());
+            user.setPhoneNumber(customerDTO.getPhoneNumber());
+            user.setFirstName(customerDTO.getFirstName());
+            user.setLastName(customerDTO.getLastName());
+            user.setCountry(customerDTO.getCountry());
+            user.setCity(customerDTO.getCity());
+            user.setProfilePictureUrl(customerDTO.getProfilePictureUrl());
+            userRepo.save(user);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(UPDATED_CODE)
+                    .message(UPDATED)
+                    .response(customerDTO)
+                    .build();
+
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(CANNOT_BE_UPDATED)
+                    .build();
         }
 
-
-        // add admin user
-        AppUser user = new AppUser();
-        user.setUsername(signUpDTO.getUsername());
-        user.setEmail(signUpDTO.getEmail());
-        user.setPassword(passwordEncoder.encode(signUpDTO.getPassword()));
-        userRepo.save(user);
-
-        Role role;
-        // get role
-        if (!signUpDTO.isCustomer())
-            role = roleRepo.findRoleByRoleName(ROLE_SELLER);
-        else
-            role = roleRepo.findRoleByRoleName(ROLE_CUSTOMER);
-
-        addRoleToUser(user.getUsername(), role.getRoleName());
-
-        // save employee
-        AppUserDetails userDetails = new AppUserDetails();
-        userDetails.setFirstName(signUpDTO.getFirstName());
-        userDetails.setLastName(signUpDTO.getLastName());
-        userDetails.setPhoneNumber(signUpDTO.getPhoneNumber());
-        userDetails.setPostalCode(signUpDTO.getPostalCode());
-        userDetails.setAddress(signUpDTO.getAddress());
-        userDetails.setCountry(signUpDTO.getCountry());
-        userDetails.setCity(signUpDTO.getCity());
-        userDetails.setUserFk(user);
-        userDetails.setStore(store);
-        employeeRepo.save(userDetails);
+        return responseDTO;
     }
 
     @Override
-    public AppUser saveUser(AppUser user) {
-        log.info("Saving new USER {} to the DB", user.getUsername());
+    public ResponseDTO updateSellerProfile(SellerDTO sellerDTO) {
+        ResponseDTO responseDTO;
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        try{
+            AppUser user = findByUsername(sellerDTO.getUsername());
+            user.setPhoneNumber(sellerDTO.getPhoneNumber());
+            user.setFirstName(sellerDTO.getFirstName());
+            user.setLastName(sellerDTO.getLastName());
+            user.setCountry(sellerDTO.getCountry());
+            user.setCity(sellerDTO.getCity());
+            user.setProfilePictureUrl(sellerDTO.getProfilePictureUrl());
+            userRepo.save(user);
+            log.info("Seller User {} updated", user.getUsername());
+
+            SellerDetails sellerDetails = sellerDetailsRepo.findByUser(user);
+            sellerDetails.setPostalCode(sellerDTO.getPostalCode());
+            sellerDetails.setAddress(sellerDTO.getAddress());
+            sellerDetails.setStore(storeRepo.getById(sellerDTO.getStoreId()));
+            sellerDetailsRepo.save(sellerDetails);
+            log.info("Sellerdetails for user {} updated", user.getUsername());
+
+            responseDTO = ResponseDTO.builder()
+                    .code(UPDATED_CODE)
+                    .message(UPDATED)
+                    .response(sellerDTO)
+                    .build();
+
+        }catch (Exception ex){
+            responseDTO = ResponseDTO.builder()
+                    .code(INTERNAL_SERVER_ERROR_CODE)
+                    .message(CANNOT_BE_UPDATED)
+                    .build();
+        }
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getCustomer(String username) {
+
+        ResponseDTO responseDTO;
+
+        try {
+            AppUser user = findByUsername(username);
+            CustomerDTO customerDTO = Mapper.map(user, CustomerDTO.class);
+
+            responseDTO = ResponseDTO.builder()
+                    .code(SUCCESS_CODE)
+                    .response(customerDTO)
+                    .build();
+
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(NOT_FOUND_CODE)
+                    .message(NOT_FOUND_MESSAGE)
+                    .build();
+        }
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO getSeller(String username) {
+
+        ResponseDTO responseDTO;
+
+        try {
+            AppUser user = findByUsername(username);
+            SellerDetails sellerDetails = sellerDetailsRepo.findByUser(user);
+            SellerDTO sellerDTO = SellerDTO.builder()
+                    .username(username)
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .firstName(user.getFirstName())
+                    .lastName(user.getLastName())
+                    .country(user.getCountry())
+                    .city(user.getCity())
+                    .profilePictureUrl(user.getProfilePictureUrl())
+                    .postalCode(sellerDetails.getPostalCode())
+                    .address(sellerDetails.getAddress())
+                    .storeId(sellerDetails.getStore().getId())
+                    .build();
+
+            responseDTO = ResponseDTO.builder()
+                    .code(SUCCESS_CODE)
+                    .response(sellerDTO)
+                    .build();
+
+        } catch (Exception ex) {
+            responseDTO = ResponseDTO.builder()
+                    .code(NOT_FOUND_CODE)
+                    .message(NOT_FOUND_MESSAGE)
+                    .build();
+        }
+
+        return responseDTO;
     }
 
     @Override
@@ -107,6 +252,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         List<Role> roles = new ArrayList<>();
         roles.add(role);
         user.setRoles(roles);
+        userRepo.save(user);
     }
 
     @Override
@@ -125,9 +271,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new User(user.getUsername(), user.getPassword(), authorities);
     }
 
-    @Override
     public AppUser findByUsername(String username) {
         return userRepo.findByUsername(username);
+    }
+
+    public AppUser findByEmail(String email) {
+        return userRepo.findByEmail(email);
     }
 
 }

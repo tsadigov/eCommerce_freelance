@@ -1,16 +1,21 @@
 package com.project.ecommerce.service;
 
-import com.project.ecommerce.domain.AppUser;
-import com.project.ecommerce.dto.SignUpDTO;
+import com.project.ecommerce.dto.*;
 
 public interface UserService {
 
-    AppUser saveUser(AppUser user);
+    ResponseDTO getCustomer(String username);
 
-    AppUser findByUsername(String username);
+    ResponseDTO getSeller(String username);
 
     void addRoleToUser(String username, String roleName);
 
-    void signUp(SignUpDTO signUpDTO);
+    ResponseDTO customerSignUp(CustomerSignUpDTO customerSignUpDTO);
+
+    ResponseDTO sellerSignUp(SellerSignUpDTO sellerSignUpDTO);
+
+    ResponseDTO updateCustomerProfile(CustomerDTO customerSignUpDTO);
+
+    ResponseDTO updateSellerProfile(SellerDTO sellerDTO);
 
 }
