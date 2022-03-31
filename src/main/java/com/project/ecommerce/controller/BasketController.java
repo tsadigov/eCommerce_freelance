@@ -30,9 +30,9 @@ public class BasketController {
         return basketService.getAllByUsername(username);
     }
 
-    @GetMapping("/product/{id}")
-    public ResponseEntity<ResponseDTO> getOne(@PathVariable Long id){
-        ResponseDTO responseDTO = basketService.getOneByProductId(id);
+    @GetMapping("/{username}/{id}")
+    public ResponseEntity<ResponseDTO> getOne(@PathVariable String username, @PathVariable Long id){
+        ResponseDTO responseDTO = basketService.getOneByProductIdAndUsername(id, username);
         return ResponseEntity.ok()
                 .body(responseDTO);
     }

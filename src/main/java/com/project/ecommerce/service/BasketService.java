@@ -1,5 +1,6 @@
 package com.project.ecommerce.service;
 
+import com.project.ecommerce.domain.AppUser;
 import com.project.ecommerce.dto.BasketProductCreationDTO;
 import com.project.ecommerce.dto.BasketProductDTO;
 import com.project.ecommerce.dto.BasketProductUpdateDTO;
@@ -13,7 +14,7 @@ public interface BasketService {
 
     List<BasketProductDTO> getAllByUsername(String username);
 
-    ResponseDTO getOneByProductId(Long id);
+    ResponseDTO getOneByProductIdAndUsername(Long id, String username);
 
     ResponseDTO updateAmount(BasketProductUpdateDTO basketProductUpdateDTO);
 

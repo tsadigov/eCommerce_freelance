@@ -3,6 +3,7 @@ package com.project.ecommerce.service;
 import com.project.ecommerce.dao.AppUserRepo;
 import com.project.ecommerce.dao.BasketProductRepo;
 import com.project.ecommerce.dao.ProductRepo;
+import com.project.ecommerce.domain.AppUser;
 import com.project.ecommerce.domain.BasketProduct;
 import com.project.ecommerce.domain.Product;
 import com.project.ecommerce.dto.*;
@@ -56,9 +57,10 @@ public class BasketServiceImpl implements BasketService{
     }
 
     @Override
-    public ResponseDTO getOneByProductId(Long id) {
+    public ResponseDTO getOneByProductIdAndUsername(Long id, String username) {
 
-        Optional<BasketProduct> basketProduct = basketProductRepo.findBasketProductByProductId(id);
+        AppUser user = userRepo.findByUsername(username);
+        Optional<BasketProduct> basketProduct = basketProductRepo.findBasketProductByProductIdAndUser(id, user);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)

@@ -1,5 +1,6 @@
 package com.project.ecommerce.dao;
 
+import com.project.ecommerce.domain.AppUser;
 import com.project.ecommerce.domain.BasketProduct;
 import com.project.ecommerce.dto.BasketProductDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,6 +23,6 @@ public interface BasketProductRepo extends JpaRepository<BasketProduct, Long> {
     List<BasketProductDTO> getAllByUsername(String username);
 
     @Query()
-    Optional<BasketProduct> findBasketProductByProductId(Long id);
+    Optional<BasketProduct> findBasketProductByProductIdAndUser(Long id, AppUser user);
 
 }
