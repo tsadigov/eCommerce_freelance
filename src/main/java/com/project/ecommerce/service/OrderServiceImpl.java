@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.project.ecommerce.bootstrap.Constants.SUCCESS;
-import static com.project.ecommerce.bootstrap.Constants.SUCCESS_CODE;
+import static com.project.ecommerce.bootstrap.Constants.*;
+import static com.project.ecommerce.bootstrap.Constants.CREATED;
 
 @Service
 @Slf4j
@@ -76,7 +76,16 @@ public class OrderServiceImpl implements OrderService{
     }
 
     @Override
-    public ResponseDTO update(OrderUpdateDTO orderUpdateDTO) {
-        return null;
+    public ResponseDTO updateStatus(OrderUpdateDTO orderUpdateDTO) {
+        Orders order = orderRepo.findById(orderUpdateDTO.getId()).get();
+        order.setStatus(orderUpdateDTO.getStatus());
+        orderRepo.save(order);
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .code(UPDATED_CODE)
+                .message(UPDATED)
+                .build();
+
+        return responseDTO;
     }
 }

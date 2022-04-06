@@ -13,6 +13,6 @@ public interface OrderService {
 
     List<OrderDTO> getAllByUsername(String username);
 
-    ResponseDTO update(OrderUpdateDTO orderUpdateDTO);
+    ResponseDTO updateStatus(OrderUpdateDTO orderUpdateDTO);
 
 }

@@ -20,7 +20,7 @@ public class OrderDTO {
     private String productPhotoUrl;
     private Float cost;
     private String storeName;
-    private String username;
+    private String username;    
     private String trackNumber;
     private LocalDate orderDate;
     private String orderStatus;

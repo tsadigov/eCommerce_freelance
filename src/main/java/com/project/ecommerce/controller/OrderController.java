@@ -2,6 +2,7 @@ package com.project.ecommerce.controller;
 
 import com.project.ecommerce.dto.OrderCreationDTO;
 import com.project.ecommerce.dto.OrderDTO;
+import com.project.ecommerce.dto.OrderUpdateDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import com.project.ecommerce.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,13 @@ public class OrderController {
     public List<OrderDTO> getAllByUsername(@PathVariable String username){
         List<OrderDTO> orders = orderService.getAllByUsername(username);
         return orders;
+    }
+
+    @PutMapping
+    public ResponseEntity<ResponseDTO> updateStatus(@RequestBody OrderUpdateDTO orderUpdateDTO){
+        ResponseDTO responseDTO = orderService.updateStatus(orderUpdateDTO);
+        return ResponseEntity.ok()
+                .body(responseDTO);
     }
 
 }
