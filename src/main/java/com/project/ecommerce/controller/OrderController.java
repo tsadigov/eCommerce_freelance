@@ -32,6 +32,12 @@ public class OrderController {
         return orders;
     }
 
+    @GetMapping("/store/{id}")
+    public List<OrderDTO> getStoreOrdersByStoreId(@PathVariable Long id){
+        List<OrderDTO> orders = orderService.getAllByStoreId(id);
+        return orders;
+    }
+
     @PutMapping
     public ResponseEntity<ResponseDTO> updateStatus(@RequestBody OrderUpdateDTO orderUpdateDTO){
         ResponseDTO responseDTO = orderService.updateStatus(orderUpdateDTO);

@@ -1,9 +1,7 @@
 package com.project.ecommerce.bootstrap;
 
-import com.project.ecommerce.configuration.PasswordConfig;
 import com.project.ecommerce.dao.*;
 import com.project.ecommerce.domain.*;
-import com.project.ecommerce.dto.ProductDTO;
 import com.project.ecommerce.dto.SubCategoryDTO;
 import com.project.ecommerce.service.RoleService;
 import com.project.ecommerce.service.SubCategoryService;
@@ -15,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +51,8 @@ public class DataInitializer implements CommandLineRunner {
 
         Store store1 = new Store(null, "Store 1", null, null);
         storeRepo.save(store1);
+        Store store2 = new Store(null, "Store 2", null, null);
+        storeRepo.save(store2);
 
         SubCategoryDTO subCategoryDTO1 = new SubCategoryDTO(null,"Man", "Clothes");
         SubCategoryDTO subCategoryDTO2 = new SubCategoryDTO(null, "Woman", "Clothes");
@@ -112,11 +110,27 @@ public class DataInitializer implements CommandLineRunner {
                 .password(passwordEncoder.encode("123Aaa"))
                 .build();
 
+        AppUser seller2 = AppUser.builder()
+                .id(null)
+                .username("seller2")
+                .email("seller2@gmail.com")
+                .phoneNumber("051")
+                .firstName("Seller")
+                .lastName("Test")
+                .country("Russia")
+                .city("Peterburq")
+                .password(passwordEncoder.encode("123Aaa"))
+                .build();
+
         userRepo.save(seller);
+        userRepo.save(seller2);
         service.addRoleToUser("seller",ROLE_SELLER);
+        service.addRoleToUser("seller2",ROLE_SELLER);
 
         SellerDetails sellerDetails = new SellerDetails(null, "0100", "Baku", 123.211f, seller, store1);
         sellerDetailsRepo.save(sellerDetails);
+        SellerDetails sellerDetails2 = new SellerDetails(null, "0100", "Baku", 123.211f, seller2, store2);
+        sellerDetailsRepo.save(sellerDetails2);
 
         log.info("Created default seller user");
 
@@ -134,7 +148,7 @@ public class DataInitializer implements CommandLineRunner {
                 .amount(12L)
                 .cost(26.5f)
                 .details("Last model")
-                .store(store1)
+                .store(store2)
                 .subcategory(subcategoryRepo.findSubcategoryBySubCategoryName("Woman"))
                 .build();
 

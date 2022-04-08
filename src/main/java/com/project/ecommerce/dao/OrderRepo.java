@@ -13,4 +13,7 @@ public interface OrderRepo extends JpaRepository<Orders, Long> {
     @Query(nativeQuery = true)
     List<OrderDTO> getAllByUsername(String username);
 
+    @Query(nativeQuery = true)
+    List<OrderDTO> getAllByStoreId(Long storeId);
+
 }

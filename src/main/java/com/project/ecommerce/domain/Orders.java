@@ -18,6 +18,15 @@ import java.time.LocalDate;
                     INNER JOIN `e-commerce`.store as s on s.id = p.store
                     WHERE username = :username""",
         resultSetMapping = "Mapping.OrderDTO")
+@NamedNativeQuery(name = "Orders.getAllByStoreId",
+        query = """
+                    SELECT o.id as id, o.product_id as productId, o.amount as orderAmount, p.amount as productAmount, p.name as productName, p.details as productDetails, p.photo_url as productPhotoUrl, p.cost as cost, s.store_name as storeName, u.username as username, o.track_number as trackNumber, o.order_date as orderDate, o.status as orderStatus FROM `e-commerce`.orders as o
+                    INNER JOIN `e-commerce`.product as p on o.product_id = p.id
+                    INNER JOIN `e-commerce`.app_user as u on o.user_id = u.id
+                    INNER JOIN `e-commerce`.store as s on s.id = p.store
+                    WHERE s.id = :storeId""",
+        resultSetMapping = "Mapping.OrderDTO")
+
 @SqlResultSetMapping(name = "Mapping.OrderDTO",
         classes = @ConstructorResult(targetClass = OrderDTO.class,
                 columns = {

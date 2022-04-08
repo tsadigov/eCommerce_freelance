@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.project.ecommerce.bootstrap.Constants.*;
-import static com.project.ecommerce.bootstrap.Constants.CREATED;
 
 @Service
 @Slf4j
@@ -72,6 +71,12 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<OrderDTO> getAllByUsername(String username) {
         List<OrderDTO> orders = orderRepo.getAllByUsername(username);
+        return orders;
+    }
+
+    @Override
+    public List<OrderDTO> getAllByStoreId(Long id) {
+        List<OrderDTO> orders = orderRepo.getAllByStoreId(id);
         return orders;
     }
 
