@@ -45,9 +45,17 @@ public class ProductController {
     }
 
     @GetMapping("/store/{id}")
-    List<ProductDTO> getAll(@PathVariable Long id){
+    List<ProductDTO> getAllByStoreId(@PathVariable Long id){
 
         List<ProductDTO> products = productService.getAllByStoreId(id);
+        return products;
+
+    }
+
+    @GetMapping("/search/{searchString}")
+    List<ProductDTO> getAllByNameAndDetails(@PathVariable String searchString){
+
+        List<ProductDTO> products = productService.getAllByNameAndDetails(searchString);
         return products;
 
     }

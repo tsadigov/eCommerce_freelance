@@ -80,6 +80,31 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepo.findProductByStoreId(storeId);
 
         List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .amount(product.getAmount())
+                    .cost(product.getCost())
+                    .details(product.getDetails())
+                    .subcategoryId(product.getSubcategory().getId())
+                    .storeId(product.getStore().getId())
+                    .photoUrl(product.getPhotoUrl())
+                    .build();
+
+            productDTOList.add(productDTO);
+        }
+
+        return productDTOList;
+    }
+
+    @Override
+    public List<ProductDTO> getAllByNameAndDetails(String searchString) {
+        List<Product> products = productRepo.findProductByNameContainsOrDetailsContains(searchString, searchString);
+
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
         for (Product product : products) {
             ProductDTO productDTO = ProductDTO.builder()
                     .id(product.getId())
@@ -134,8 +159,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseDTO update(MultipartFile file, ProductDTO productDTO) throws IOException{
-        String fileName = StringUtils.cleanPath(System.currentTimeMillis()+PRODUCT_PHOTO_END);
+    public ResponseDTO update(MultipartFile file, ProductDTO productDTO) throws IOException {
+        String fileName = StringUtils.cleanPath(System.currentTimeMillis() + PRODUCT_PHOTO_END);
         Path fileStorage = get(DIRECTORY_PRODUCT, fileName).toAbsolutePath().normalize();
         copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
 
@@ -155,7 +180,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.save(product);
 
-        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()),ProductDTO.class);
+        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()), ProductDTO.class);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(UPDATED_CODE)
@@ -168,7 +193,10 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseDTO delete(Long id) {
-        productRepo.deleteById(id);
+        Product product = productRepo.findById(id).get();
+        product.setAmount(0L);
+        productRepo.save(product);
+
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(DELETED_CODE)
                 .message(DELETED)
@@ -179,7 +207,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResponseDTO createProduct(MultipartFile file, ProductDTO productDTO) throws IOException {
 
-        String fileName = StringUtils.cleanPath(System.currentTimeMillis()+PRODUCT_PHOTO_END);
+        String fileName = StringUtils.cleanPath(System.currentTimeMillis() + PRODUCT_PHOTO_END);
         Path fileStorage = get(DIRECTORY_PRODUCT, fileName).toAbsolutePath().normalize();
         copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
 
@@ -198,7 +226,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.save(product);
 
-        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()),ProductDTO.class);
+        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()), ProductDTO.class);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(CREATED_CODE)

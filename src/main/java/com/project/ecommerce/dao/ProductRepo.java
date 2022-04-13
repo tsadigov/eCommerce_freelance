@@ -11,4 +11,7 @@ import java.util.List;
 public interface ProductRepo extends JpaRepository<Product, Long> {
 
     List<Product> findProductByStoreId(Long id);
+
+    List<Product> findProductByNameContainsOrDetailsContains(String searchString, String search);
+
 }

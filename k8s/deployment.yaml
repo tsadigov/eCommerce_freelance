@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ecommerce
-          image: turalsadigov/ecommerce:v12
+          image: turalsadigov/ecommerce:v14
           ports:
             - containerPort: 8080
           env:
