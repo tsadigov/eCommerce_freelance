@@ -100,6 +100,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDTO> getAllBySubcategoryId(Long subcategoryId) {
+
+        List<Product> products = productRepo.findProductBySubcategory(subcategoryRepo.getById(subcategoryId));
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .amount(product.getAmount())
+                    .cost(product.getCost())
+                    .details(product.getDetails())
+                    .subcategoryId(product.getSubcategory().getId())
+                    .storeId(product.getStore().getId())
+                    .photoUrl(product.getPhotoUrl())
+                    .build();
+
+            productDTOList.add(productDTO);
+        }
+
+        return productDTOList;
+    }
+
+    @Override
     public List<ProductDTO> getAllByNameAndDetails(String searchString) {
         List<Product> products = productRepo.findProductByNameContainsOrDetailsContains(searchString, searchString);
 

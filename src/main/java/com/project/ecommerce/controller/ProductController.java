@@ -52,6 +52,14 @@ public class ProductController {
 
     }
 
+    @GetMapping("/filter/{subcategorId}")
+    List<ProductDTO> getAllBySubcategory(@PathVariable Long subcategorId){
+
+        List<ProductDTO> products = productService.getAllBySubcategoryId(subcategorId);
+        return products;
+
+    }
+
     @GetMapping("/search/{searchString}")
     List<ProductDTO> getAllByNameAndDetails(@PathVariable String searchString){
 

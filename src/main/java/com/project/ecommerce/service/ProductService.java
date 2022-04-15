@@ -15,6 +15,8 @@ public interface ProductService {
 
     List<ProductDTO> getAllByStoreId(Long storeId);
 
+    List<ProductDTO> getAllBySubcategoryId(Long subcategoryId);
+
     List<ProductDTO> getAllByNameAndDetails(String searchString);
 
     ResponseDTO create(ProductDTO productDTO);
