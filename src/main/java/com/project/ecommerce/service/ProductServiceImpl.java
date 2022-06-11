@@ -1,11 +1,9 @@
 package com.project.ecommerce.service;
 
-import com.project.ecommerce.dao.ProductPhotoRepo;
 import com.project.ecommerce.dao.ProductRepo;
 import com.project.ecommerce.dao.StoreRepo;
 import com.project.ecommerce.dao.SubcategoryRepo;
 import com.project.ecommerce.domain.Product;
-import com.project.ecommerce.domain.ProductPhoto;
 import com.project.ecommerce.domain.Store;
 import com.project.ecommerce.domain.Subcategory;
 import com.project.ecommerce.dto.ProductDTO;
@@ -78,6 +76,78 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductDTO> getAllByStoreId(Long storeId) {
+        List<Product> products = productRepo.findProductByStoreId(storeId);
+
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .amount(product.getAmount())
+                    .cost(product.getCost())
+                    .details(product.getDetails())
+                    .subcategoryId(product.getSubcategory().getId())
+                    .storeId(product.getStore().getId())
+                    .photoUrl(product.getPhotoUrl())
+                    .build();
+
+            productDTOList.add(productDTO);
+        }
+
+        return productDTOList;
+    }
+
+    @Override
+    public List<ProductDTO> getAllBySubcategoryId(Long subcategoryId) {
+
+        List<Product> products = productRepo.findProductBySubcategory(subcategoryRepo.getById(subcategoryId));
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .amount(product.getAmount())
+                    .cost(product.getCost())
+                    .details(product.getDetails())
+                    .subcategoryId(product.getSubcategory().getId())
+                    .storeId(product.getStore().getId())
+                    .photoUrl(product.getPhotoUrl())
+                    .build();
+
+            productDTOList.add(productDTO);
+        }
+
+        return productDTOList;
+    }
+
+    @Override
+    public List<ProductDTO> getAllByNameAndDetails(String searchString) {
+        List<Product> products = productRepo.findProductByNameContainsOrDetailsContains(searchString, searchString);
+
+        List<ProductDTO> productDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            ProductDTO productDTO = ProductDTO.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .amount(product.getAmount())
+                    .cost(product.getCost())
+                    .details(product.getDetails())
+                    .subcategoryId(product.getSubcategory().getId())
+                    .storeId(product.getStore().getId())
+                    .photoUrl(product.getPhotoUrl())
+                    .build();
+
+            productDTOList.add(productDTO);
+        }
+
+        return productDTOList;
+    }
+
+    @Override
     public ResponseDTO create(ProductDTO productDTO) {
 
         Subcategory subcategory = subcategoryRepo.getById(productDTO.getSubcategoryId());
@@ -113,9 +183,55 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResponseDTO update(MultipartFile file, ProductDTO productDTO) throws IOException {
+        String fileName = StringUtils.cleanPath(System.currentTimeMillis() + PRODUCT_PHOTO_END);
+        Path fileStorage = get(DIRECTORY_PRODUCT, fileName).toAbsolutePath().normalize();
+        copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
+
+        Subcategory subcategory = subcategoryRepo.getById(productDTO.getSubcategoryId());
+        Store store = storeRepo.getById(productDTO.getStoreId());
+
+        Product product = Product.builder()
+                .id(productDTO.getId())
+                .name(productDTO.getName())
+                .amount(productDTO.getAmount())
+                .cost(productDTO.getCost())
+                .details(productDTO.getDetails())
+                .store(store)
+                .subcategory(subcategory)
+                .photoUrl(fileName)
+                .build();
+
+        productRepo.save(product);
+
+        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()), ProductDTO.class);
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .code(UPDATED_CODE)
+                .message(UPDATED)
+                .response(tempProduct)
+                .build();
+
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO delete(Long id) {
+        Product product = productRepo.findById(id).get();
+        product.setAmount(0L);
+        productRepo.save(product);
+
+        ResponseDTO responseDTO = ResponseDTO.builder()
+                .code(DELETED_CODE)
+                .message(DELETED)
+                .build();
+        return responseDTO;
+    }
+
+    @Override
     public ResponseDTO createProduct(MultipartFile file, ProductDTO productDTO) throws IOException {
 
-        String fileName = StringUtils.cleanPath(System.currentTimeMillis()+PRODUCT_PHOTO_END);
+        String fileName = StringUtils.cleanPath(System.currentTimeMillis() + PRODUCT_PHOTO_END);
         Path fileStorage = get(DIRECTORY_PRODUCT, fileName).toAbsolutePath().normalize();
         copy(file.getInputStream(), fileStorage, REPLACE_EXISTING);
 
@@ -134,7 +250,7 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.save(product);
 
-        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()),ProductDTO.class);
+        ProductDTO tempProduct = Mapper.map(productRepo.getById(product.getId()), ProductDTO.class);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(CREATED_CODE)

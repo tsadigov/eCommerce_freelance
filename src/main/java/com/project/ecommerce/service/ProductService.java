@@ -13,7 +13,17 @@ public interface ProductService {
 
     List<ProductDTO> getAll();
 
+    List<ProductDTO> getAllByStoreId(Long storeId);
+
+    List<ProductDTO> getAllBySubcategoryId(Long subcategoryId);
+
+    List<ProductDTO> getAllByNameAndDetails(String searchString);
+
     ResponseDTO create(ProductDTO productDTO);
+
+    ResponseDTO update(MultipartFile file, ProductDTO productDTO) throws IOException;
+
+    ResponseDTO delete(Long id);
 
     ResponseDTO createProduct(MultipartFile file, ProductDTO productDTO) throws IOException;
 

@@ -44,10 +44,41 @@ public class ProductController {
 
     }
 
+    @GetMapping("/store/{id}")
+    List<ProductDTO> getAllByStoreId(@PathVariable Long id){
+
+        List<ProductDTO> products = productService.getAllByStoreId(id);
+        return products;
+
+    }
+
+    @GetMapping("/filter/{subcategorId}")
+    List<ProductDTO> getAllBySubcategory(@PathVariable Long subcategorId){
+
+        List<ProductDTO> products = productService.getAllBySubcategoryId(subcategorId);
+        return products;
+
+    }
+
+    @GetMapping("/search/{searchString}")
+    List<ProductDTO> getAllByNameAndDetails(@PathVariable String searchString){
+
+        List<ProductDTO> products = productService.getAllByNameAndDetails(searchString);
+        return products;
+
+    }
+
     @PostMapping
     ResponseEntity<ResponseDTO> create(@RequestBody ProductDTO productDTO){
         ResponseDTO responseDTO = productService.create(productDTO);
 
+        return ResponseEntity.ok()
+                .body(responseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO> delete(@PathVariable Long id){
+        ResponseDTO responseDTO = productService.delete(id);
         return ResponseEntity.ok()
                 .body(responseDTO);
     }
@@ -70,6 +101,31 @@ public class ProductController {
             fileContent = in.readAllBytes();
         }
         return fileContent;
+    }
+
+    @PutMapping
+    public ResponseEntity<ResponseDTO> updateProduct(@RequestPart("file") MultipartFile file,
+                                                     @RequestPart("product-id") String id,
+                                                     @RequestPart("product-name") String name,
+                                                     @RequestPart("cost") String cost,
+                                                     @RequestPart("amount") String amount,
+                                                     @RequestPart("storeId") String storeId,
+                                                     @RequestPart("subcategory") String subCategoryId,
+                                                     @RequestPart("details") String details) throws IOException {
+
+        ProductDTO productDTO = ProductDTO.builder()
+                .id(Long.parseLong(id))
+                .name(name)
+                .cost(Float.parseFloat(cost))
+                .amount(Long.parseLong(amount))
+                .storeId(Long.parseLong(storeId))
+                .subcategoryId(Long.parseLong(subCategoryId))
+                .details(details)
+                .build();
+
+        ResponseDTO responseDTO = productService.update(file, productDTO);
+
+        return ResponseEntity.ok().body(responseDTO);
     }
 
     @PostMapping("/add")

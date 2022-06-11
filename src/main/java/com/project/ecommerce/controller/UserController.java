@@ -71,7 +71,7 @@ public class UserController {
                 .body(responseDTO);
     }
 
-    @PostMapping("/update/customer")
+    @PutMapping("/update/customer")
     ResponseEntity<ResponseDTO> updateCustomerProfile(@RequestBody CustomerDTO customerDTO) {
 
         ResponseDTO responseDTO = userService.updateCustomerProfile(customerDTO);

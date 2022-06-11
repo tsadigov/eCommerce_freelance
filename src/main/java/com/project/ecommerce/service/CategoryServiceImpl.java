@@ -45,12 +45,12 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseDTO getAll() {
         List<Category> categories = categoryRepo.findAll();//  .stream().toList();
         log.info("Categories: {}", categories);
-        List<CategoryDTO> categoryDTOs = Mapper.mapAll(categories, CategoryDTO.class);
+//        List<CategoryDTO> categoryDTOs = Mapper.mapAll(categories, CategoryDTO.class);
 
         ResponseDTO responseDTO = ResponseDTO.builder()
                 .code(SUCCESS_CODE)
                 .message(SUCCESS)
-                .response(categoryDTOs)
+                .response(categories)
                 .build();
 
         return responseDTO;

@@ -8,7 +8,6 @@ import com.project.ecommerce.dto.LoginDTO;
 import com.project.ecommerce.dto.ResponseDTO;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

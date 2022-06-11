@@ -1,5 +1,6 @@
 package com.project.ecommerce.dto;
 
+import com.project.ecommerce.domain.OrderStatus;
 import lombok.*;
 
 @Getter
@@ -10,6 +11,6 @@ import lombok.*;
 public class OrderUpdateDTO {
 
     private Long id;
-    private int status;
+    private OrderStatus status;
 
 }
